@@ -1,7 +1,9 @@
 package org.softcits.auth.controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
+import org.softcits.auth.model.MbgUserAndRole;
 import org.softcits.auth.service.VPAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,5 +31,14 @@ public class VPAuthController {
 			e.printStackTrace();
 		}
 		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+	
+	@RequestMapping(path="/user/getAll", method=RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List<MbgUserAndRole>> usersGelAll(){
+		
+		List<MbgUserAndRole> mbgUserAndRoleList = vpAuthService.getAllUsers();
+		
+		return new ResponseEntity<List<MbgUserAndRole>>(mbgUserAndRoleList,HttpStatus.OK);
 	}
 }

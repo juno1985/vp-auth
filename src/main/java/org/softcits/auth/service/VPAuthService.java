@@ -2,9 +2,12 @@ package org.softcits.auth.service;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 
 import org.softcits.auth.mapper.MbgUserMapper;
+import org.softcits.auth.mapper.MbgUserRoleMapper;
 import org.softcits.auth.model.MbgUser;
+import org.softcits.auth.model.MbgUserAndRole;
 import org.softcits.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ public class VPAuthService {
 	
 	@Autowired
 	private MbgUserMapper mbgUserMapper;
+	@Autowired
+	private MbgUserRoleMapper mbgUserRoleMapper;
 
 	public void addUser(String username, String password) throws NoSuchAlgorithmException {
 		
@@ -29,5 +34,10 @@ public class VPAuthService {
 		
 		mbgUserMapper.insert(mbgUser);
 		
+	}
+
+	public List<MbgUserAndRole> getAllUsers() {
+		List<MbgUserAndRole> urList = mbgUserRoleMapper.getAllUsersAndRoles();
+		return urList;
 	}
 }
