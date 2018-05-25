@@ -4,12 +4,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.softcits.auth.model.MbgUserAndRole;
+import org.softcits.auth.model.UserDisplayForm;
 import org.softcits.auth.service.VPAuthService;
 import org.softcits.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +48,17 @@ public class VPAuthController {
 			result = callback + "(" + result + ")";
 		}
 		
+		return new ResponseEntity<>(result,HttpStatus.OK);
+	}
+	
+	@RequestMapping(path="/user/{id}/form", method=RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> userFormById(@PathVariable String id, @RequestParam(required=false) String callback){
+		UserDisplayForm userDisplayForm = vpAuthService.userFormById(Integer.parseInt(id));
+		String result = JsonUtils.objectToJson(userDisplayForm);
+		if(!StringUtil.isEmpty(callback)) {
+			result = callback + "(" + result + ")";
+		}
 		return new ResponseEntity<>(result,HttpStatus.OK);
 	}
 }
