@@ -89,7 +89,7 @@ public class VPAuthController {
 		if(!StringUtils.isEmpty(callback)) {
 			result = callback + "(" + result + ")";
 		}
-		return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 		
 	}
 }
