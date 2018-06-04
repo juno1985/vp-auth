@@ -104,4 +104,15 @@ public class VPAuthService {
 		}
 		return null;
 	}
+	
+	public String getUserByToken(String token) {
+		//判断token是否过期/存在redis中
+		if(stringRedisTemplate.hasKey(token)) {
+			String userJson = stringRedisTemplate.opsForValue().get(token);
+			//重置过期时间
+			stringRedisTemplate.expire(token, 30, TimeUnit.MINUTES);
+			return userJson;
+		}
+		return null;
+	}
 }

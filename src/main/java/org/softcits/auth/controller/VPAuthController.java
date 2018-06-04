@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.util.StringUtils;
 import com.github.pagehelper.StringUtil;
 
 @Controller
@@ -74,5 +75,21 @@ public class VPAuthController {
 			e.printStackTrace();
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@RequestMapping(path="/{token}/token", method=RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> getUserByToken(@PathVariable String token,
+			@RequestParam(required=false) String callback){
+		
+		String result = vpAuthService.getUserByToken(token);
+		if(StringUtils.isEmpty(result)) {
+			return new ResponseEntity<>("Token Expired", HttpStatus.BAD_REQUEST);
+		}
+		if(!StringUtils.isEmpty(callback)) {
+			result = callback + "(" + result + ")";
+		}
+		return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+		
 	}
 }
