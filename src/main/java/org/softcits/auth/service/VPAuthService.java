@@ -4,6 +4,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.softcits.auth.model.UserDisplayForm;
 import org.softcits.auth.mapper.MbgRoleMapper;
 import org.softcits.auth.mapper.MbgUserMapper;
@@ -12,8 +14,12 @@ import org.softcits.auth.model.MbgRole;
 import org.softcits.auth.model.MbgUser;
 import org.softcits.auth.model.MbgUserAndRole;
 import org.softcits.auth.model.MbgUserExample;
+import org.softcits.utils.JsonUtils;
 import org.softcits.utils.SecurityUtil;
+import org.softcits.utils.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +34,12 @@ public class VPAuthService {
 	private MbgUserRoleMapper mbgUserRoleMapper;
 	@Autowired
 	private MbgRoleMapper mbgRoleMapper;
+	
+	@Value("${USER_ID_REDIS}")
+	private String USER_ID_REDIS;
+	
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
 
 	public void addUser(String username, String password) throws NoSuchAlgorithmException {
 		
@@ -74,14 +86,21 @@ public class VPAuthService {
 		return userDisplayForm;
 	}
 	
-	public MbgUser login(String username, String passwd) throws NoSuchAlgorithmException {
+	public String login(String username, String passwd) throws NoSuchAlgorithmException {
 		MbgUserExample userExa = new MbgUserExample();
 		MbgUserExample.Criteria userCri = userExa.createCriteria();
 		userCri.andUsernameEqualTo(username);
 		List<MbgUser> uList = mbgUserMapper.selectByExample(userExa);
-		if(uList.size() > 0 && SecurityUtil.md5(passwd).equals(uList.get(0).getPasswd())) {
 		
-			return uList.get(0);
+		if(uList.size() > 0 && SecurityUtil.md5(passwd).equals(uList.get(0).getPasswd())
+				&& uList.get(0).getState().equals("active")) {
+			MbgUser user = uList.get(0);
+			String token = UUIDUtil.UUIDGenerator();
+			
+			//然后将数据更新进Redis
+			stringRedisTemplate.opsForValue().set(USER_ID_REDIS+":"+token, JsonUtils.objectToJson(user), 30, TimeUnit.MINUTES);
+			
+			return USER_ID_REDIS+":"+token;
 		}
 		return null;
 	}

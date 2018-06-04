@@ -65,14 +65,14 @@ public class VPAuthController {
 	
 	@RequestMapping(path="/user/login", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<MbgUser> login(@RequestParam String username, @RequestParam String passwd){
-		MbgUser mbgUser = null;
+	public ResponseEntity<String> login(@RequestParam String username, @RequestParam String passwd){
+		String result = null;
 		try {
-			mbgUser = vpAuthService.login(username, passwd);
+			result = vpAuthService.login(username, passwd);
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new ResponseEntity<>(mbgUser, HttpStatus.OK);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 }
