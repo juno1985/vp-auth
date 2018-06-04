@@ -3,6 +3,7 @@ package org.softcits.auth.controller;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.softcits.auth.model.MbgUser;
 import org.softcits.auth.model.MbgUserAndRole;
 import org.softcits.auth.model.UserDisplayForm;
 import org.softcits.auth.service.VPAuthService;
@@ -60,5 +61,18 @@ public class VPAuthController {
 			result = callback + "(" + result + ")";
 		}
 		return new ResponseEntity<>(result,HttpStatus.OK);
+	}
+	
+	@RequestMapping(path="/user/login", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<MbgUser> login(@RequestParam String username, @RequestParam String passwd){
+		MbgUser mbgUser = null;
+		try {
+			mbgUser = vpAuthService.login(username, passwd);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(mbgUser, HttpStatus.OK);
 	}
 }

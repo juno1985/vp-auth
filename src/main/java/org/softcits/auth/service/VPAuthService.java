@@ -11,6 +11,7 @@ import org.softcits.auth.mapper.MbgUserRoleMapper;
 import org.softcits.auth.model.MbgRole;
 import org.softcits.auth.model.MbgUser;
 import org.softcits.auth.model.MbgUserAndRole;
+import org.softcits.auth.model.MbgUserExample;
 import org.softcits.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,17 @@ public class VPAuthService {
 		userDisplayForm.setStates(states);
 		
 		return userDisplayForm;
+	}
+	
+	public MbgUser login(String username, String passwd) throws NoSuchAlgorithmException {
+		MbgUserExample userExa = new MbgUserExample();
+		MbgUserExample.Criteria userCri = userExa.createCriteria();
+		userCri.andUsernameEqualTo(username);
+		List<MbgUser> uList = mbgUserMapper.selectByExample(userExa);
+		if(uList.size() > 0 && SecurityUtil.md5(passwd).equals(uList.get(0).getPasswd())) {
+		
+			return uList.get(0);
+		}
+		return null;
 	}
 }
