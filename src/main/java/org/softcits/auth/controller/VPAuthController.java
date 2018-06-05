@@ -92,4 +92,11 @@ public class VPAuthController {
 		return new ResponseEntity<>(result, HttpStatus.OK);
 		
 	}
+	
+	@RequestMapping(path="/user/{token}/logout", method=RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> logout(@PathVariable String token){
+		vpAuthService.logout(token);
+		return new ResponseEntity<>("success", HttpStatus.OK);
+	}
 }
